@@ -11,4 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./postgres:/var/lib/postgesql/data
+      - postgres-medmath:/var/lib/postgesql/data
+
+volumes:
+  postgres-medmath:
