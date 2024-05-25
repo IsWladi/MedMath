@@ -20,10 +20,13 @@ public class Sugerencia extends Receta {
     @JsonIgnore
     private Long id;
     @Column(nullable = false)
+    private int cuantasVecesTomarPorDia;
+    @Column(nullable = false)
     private ArrayList<ArrayList<String>> sugerenciaHorarios;
 
-    public Sugerencia(ArrayList<ArrayList<String>> sugerenciaHorarios, int cadaCuantoHoras, int porCuantosDias) {
+    public Sugerencia(ArrayList<ArrayList<String>> sugerenciaHorarios, int cadaCuantoHoras, int porCuantosDias, int cuantasVecesTomarPorDia) {
         super(cadaCuantoHoras, porCuantosDias);
+        this.cuantasVecesTomarPorDia = cuantasVecesTomarPorDia;
         this.sugerenciaHorarios = sugerenciaHorarios;
     }
 
@@ -39,4 +42,11 @@ public class Sugerencia extends Receta {
 		this.sugerenciaHorarios = sugerenciaHorarios;
 	}
 
+	public int getCuantasVecesTomarPorDia() {
+		return cuantasVecesTomarPorDia;
+	}
+
+	public void setCuantasVecesTomarPorDia(int cuantasVecesTomarPorDia) {
+		this.cuantasVecesTomarPorDia = cuantasVecesTomarPorDia;
+	}
 }

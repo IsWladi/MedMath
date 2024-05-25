@@ -28,24 +28,73 @@ public class SugerenciaController {
 
     @GetMapping("/obtener/sugerencia/horarios")
     public Sugerencia obtenerSugerenciaHorarios(@RequestBody Receta receta) {
-        // Implementación de la lógica para obtener sugerencia de horarios
-        // para tomar los remedios
+        int cuantasVecesTomarPorDia = this.calcularCuantasVecesTomarDia(receta.getCadaCuantoHoras());
+        int ultimaHoraPosibleTomar = this.calcularUltimaHoraPosibleTomar(receta.getCadaCuantoHoras());
+
         // se debe devolver una lista de horarios en formato de 24 horas
         ArrayList<ArrayList<String>> sugerenciaHorarios = new ArrayList<ArrayList<String>>();
 
-        // Ejemplo de sugerencia de horarios
-        ArrayList<String> sugerenciaList = new ArrayList<String>();
-        sugerenciaList.add("08:00");
-        sugerenciaList.add("12:00");
-        sugerenciaList.add("16:00");
+        for (int i = 0; i < 24; i++) {
+            int ultimaHoraTomarOtra = ((i + receta.getCadaCuantoHoras()) * cuantasVecesTomarPorDia);
 
-        sugerenciaHorarios.add(sugerenciaList);
-        // Ejemplo de sugerencia de horarios
+            ArrayList<String> sugerenciaList = new ArrayList<String>();
 
-        int cadaCuantoHoras = receta.getCadaCuantoHoras();
-        int porCuantosDias = receta.getPorCuantosDias();
+            // crear sugerencia de horario empezando en hora "i"
+            int j = i;
+            int cantidadVecesTomadas = 0; // para saber cuantas sugerencias se han hecho
+            boolean esSugerenciasValida = true;
+            while (j <= ultimaHoraTomarOtra && cantidadVecesTomadas < cuantasVecesTomarPorDia) {
+                String horaSugerida = this.convertirHoraIntAString(j);
+                // si la hora sugerida el mayor a 00:00, es una sugerencia invalida
+                if (j > 24) {
+                    esSugerenciasValida = false;
+                    break;
+                }
+                sugerenciaList.add(horaSugerida);
+                j += receta.getCadaCuantoHoras();
+                cantidadVecesTomadas++;
+            }
+            if (esSugerenciasValida) {
+                sugerenciaHorarios.add(sugerenciaList);
+            }
+            else {
+                break;
+            }
+        }
 
-        Sugerencia sugerencia = new Sugerencia(sugerenciaHorarios, cadaCuantoHoras, porCuantosDias);
-        return sugerencia;
+
+        return new Sugerencia(sugerenciaHorarios, receta.getCadaCuantoHoras(), receta.getPorCuantosDias(), cuantasVecesTomarPorDia);
+    }
+
+    public String convertirHoraIntAString(int hora) {
+        String horaString = String.valueOf(hora);
+        if (horaString.length() == 1) {
+            horaString = "0" + horaString;
+        }
+        if (horaString.equals("24")) {
+            horaString = "00";
+        }
+        horaString += ":00";
+        // agregar si es AM o PM
+        if (hora < 12 || hora == 24) {
+            horaString += " am";
+        }
+        else {
+            horaString += " pm";
+        }
+        return horaString;
+    }
+
+    public int calcularCuantasVecesTomarDia(int cadaCuantoHoras) {
+        // return 0: error, no puede ser mayor a 24 horas o menor o igual a 0 horas
+        if (cadaCuantoHoras >24 || cadaCuantoHoras <= 0) {
+            return 0;
+        }
+        return 24 / cadaCuantoHoras;
+    }
+
+    public int calcularUltimaHoraPosibleTomar(int cadaCuantoHoras) {
+        int ultimaHoraPosible = 24 - cadaCuantoHoras;
+        return ultimaHoraPosible;
     }
 }

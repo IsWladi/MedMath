@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.iswladi.apimedmath</groupId>
 	<artifactId>apimedmath</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<name>apimedmath</name>
-	<description>Demo project for Spring Boot</description>
+	<description>API REST con Spring Boot que sugiere horarios para la toma de medicamentos recetados por el médico.</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

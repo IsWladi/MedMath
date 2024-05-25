@@ -5,8 +5,8 @@ package com.iswladi.apimedmath.apimedmath.Entities;
  */
 public class Receta {
 
-    private int cadaCuantoHoras;
     private int porCuantosDias;
+    private int cadaCuantoHoras;
 
     public Receta(int cadaCuantoHoras, int porCuantosDias) {
         this.cadaCuantoHoras = cadaCuantoHoras;
