@@ -26,11 +26,27 @@ public class SugerenciaController {
     @Autowired
     private SugerenciaRepository sugerenciaRepository;
 
+    /**
+     * Endpoint para obtener una sugerencia de horarios basada en la receta proporcionada.
+     *
+     * @param receta La receta que contiene la información necesaria para calcular los horarios.
+     * @return Un objeto Sugerencia que incluye los horarios sugeridos, cada cuánto tiempo tomar y por cuántos días.
+     */
     @GetMapping("/obtener/sugerencia/horarios")
     public Sugerencia obtenerSugerenciaHorarios(@RequestBody Receta receta) {
         int cuantasVecesTomarPorDia = this.calcularCuantasVecesTomarDia(receta.getCadaCuantoHoras());
-        int ultimaHoraPosibleTomar = this.calcularUltimaHoraPosibleTomar(receta.getCadaCuantoHoras());
+        ArrayList<ArrayList<String>> sugerenciaHorarios = this.obtenerSugerenciaHorarios(cuantasVecesTomarPorDia, receta);
+        return new Sugerencia(sugerenciaHorarios, receta.getCadaCuantoHoras(), receta.getPorCuantosDias(), cuantasVecesTomarPorDia);
+    }
 
+    /**
+     * Metodo que implementa la lógica para obtener una sugerencia de horarios.
+     *
+     * @param cuantasVecesTomarPorDia Numero de veces a tomar por dia la receta.
+     * @param receta La receta que contiene la información necesaria para calcular los horarios.
+     * @return Retorna una lista de sugerencias de horarios basada en la receta proporcionada.
+     */
+    public ArrayList<ArrayList<String>> obtenerSugerenciaHorarios(int cuantasVecesTomarPorDia, Receta receta){
         // se debe devolver una lista de horarios en formato de 24 horas
         ArrayList<ArrayList<String>> sugerenciaHorarios = new ArrayList<ArrayList<String>>();
 
@@ -62,10 +78,17 @@ public class SugerenciaController {
             }
         }
 
+        return sugerenciaHorarios;
 
-        return new Sugerencia(sugerenciaHorarios, receta.getCadaCuantoHoras(), receta.getPorCuantosDias(), cuantasVecesTomarPorDia);
+
     }
 
+    /**
+     * Método que hace la conversión de un entero a un string con formato de hora 24 horas (15 -> 15:00 pm)
+     *
+     * @param hora La hora en entero que se quiere convertir a string.
+     * @return Retorna la hora en formato de string.
+     */
     public String convertirHoraIntAString(int hora) {
         String horaString = String.valueOf(hora);
         if (horaString.length() == 1) {
@@ -85,16 +108,18 @@ public class SugerenciaController {
         return horaString;
     }
 
+
+    /**
+     * Método que calcula cuántas veces se debe tomar el medicamento durante el día.
+     *
+     * @param cadaCuantoHoras La cantidad de horas que deben pasar entre cada toma.
+     * @return Retorna la hora en formato de string.
+     */
     public int calcularCuantasVecesTomarDia(int cadaCuantoHoras) {
         // return 0: error, no puede ser mayor a 24 horas o menor o igual a 0 horas
         if (cadaCuantoHoras >24 || cadaCuantoHoras <= 0) {
             return 0;
         }
         return 24 / cadaCuantoHoras;
-    }
-
-    public int calcularUltimaHoraPosibleTomar(int cadaCuantoHoras) {
-        int ultimaHoraPosible = 24 - cadaCuantoHoras;
-        return ultimaHoraPosible;
     }
 }
