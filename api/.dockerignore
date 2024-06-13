@@ -1,0 +1,11 @@
+.settings/
+.mvn/
+.classpath
+.env
+.env.template
+.project
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/

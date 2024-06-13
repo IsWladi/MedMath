@@ -8,10 +8,24 @@ services:
       POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
       POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       POSTGRES_DB: ${SPRING_DATASOURCE_DB}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres-medmath:/var/lib/postgesql/data
+    # ports:
+    #   - "5432:5432"
+    # volumes:
+    #   - postgres-medmath:/var/lib/postgesql/data
 
-volumes:
-  postgres-medmath:
+  apirest:
+    container_name: medmath-api
+    build: .
+    command: >
+        sh -c "./mvnw clean install compile
+        && ./mvnw spring-boot:run"
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${SPRING_DATASOURCE_DB}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_DATASOURCE_DB=${SPRING_DATASOURCE_DB}
+
+# volumes:
+#   postgres-medmath:
