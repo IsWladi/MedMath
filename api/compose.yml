@@ -2,8 +2,8 @@ version: '3.8'
 services:
   postgres:
     container_name: medmath-bdd
-    image: postgres:latest
-    restart: always
+    image: postgres:16.3-alpine3.20
+    # restart: always
     environment:
       POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
       POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
@@ -11,7 +11,7 @@ services:
     # ports:
     #   - "5432:5432"
     # volumes:
-    #   - postgres-medmath:/var/lib/postgesql/data
+      # - postgres-medmath:/var/lib/postgresql/data
 
   apirest:
     container_name: medmath-api
