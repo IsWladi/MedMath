@@ -5,6 +5,18 @@ Todos los cambios importantes de este proyecto serán documentados en este archi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2024-06-14
+
+### Added
+- Añade archivo `./api/bdd-compose.yml` para levantar la base de datos con Docker para usar en desarrollo
+
+### Changed
+- Actualiza archivo compose.yml para levantar la aplicación con Docker (no apta para desarrollo, solo para probar la aplicación ya que no permite hot reload)
+- Mejora la documentación del README.md, ahora incluye intrucciones para levantar la aplicación
+- Valor por defecto en el archivo `.env.template` para la variable `SPRING_DATASOURCE_DB`
+
+### Removed
+
 ## [Unreleased] - 2024-05-25
 
 ### Added
