@@ -1,9 +1,20 @@
-# Instrucciones para levantar entorno local en Linux Ubuntu WSL2
-## Descargar, Descomprimir e Instalar
-- Ejecutar script (revisarlo antes y modificarlo si es necesario): `sudo ./setup.sh`
+# Instrucciones para levantar entorno
 
-## Agregar variables de entorno
-- Abrir el archivo ~/.bashrc o ~/.zshrc según el caso
+<details>
+<summary>Desarrollo - Ubuntu</summary>
+</br>
+
+### Requerimientos
+- Java 17.0.11
+- Maven 3.9.6
+- Spring Boot CLI 3.2.5 ( opcional, solamente para crear una aplicación de Spring Boot desde 0 )
+- Docker
+
+### Descargar, Descomprimir e Instalar
+- Ejecutar script (revisarlo antes y modificarlo si es necesario o hacer instalación manual): `sudo ./setup.sh`
+
+### Agregar variables de entorno
+- Abrir el archivo `~/.bashrc` o `~/.zshrc` según el caso
 - Agregar lo siguiente al final del archivo:
     ``` bash
     # JDK
@@ -21,12 +32,38 @@
     PATH="$SPRING_HOME/bin:$PATH"
     export PATH
     ```
-## Probar que todo este instalado
-- java --version
-- mvn --version
-- spring --version
+### Probar que todo este instalado
+- `java --version`
+- `mvn --version`
+- ( opcional ) `spring --version`
 
-## Levantar API REST
-- Ejecutar "./mvnw clean install compile spring-boot:run"
+### Crear archivo de variables de entorno
+- En el directorio `./api/` crear el archivo `.env`
+- En el archivo `.env` pegar el contenido de `.env.template` y modificar los valores de `USERNAME` y `PASSWORD`
 
-# Instrucciones para levantar entorno local con Docker
+### Levantar base de datos con Docker
+Nota: Si no se desea utilizar Docker, se puede instalar PostgreSQL de manera local usando las variables de entorno del archivo `.env`
+- Ejecutar `docker compose -f bdd-compose.yml up -d`
+
+### Instalación de dependencias y compilación
+- En el directorio `./api/` ejecutar `./mvnw clean install compile`
+
+### Levantar API REST
+- En el directorio `./api/` ejecutar `./mvnw spring-boot:run`
+
+</details>
+
+<details>
+<summary>Probar aplicación - Docker</summary>
+</br>
+
+### Requerimientos
+- Docker
+
+### Crear archivo de variables de entorno
+- En el directorio `./api/` crear el archivo `.env`
+- En el archivo `.env` pegar el contenido de `.env.template` y modificar los valores de `USERNAME` y `PASSWORD`
+
+### Levantar API REST y Base de Datos con Docker
+- En el directorio `./api/` ejecutar `docker compose up -d`
+</details>
