@@ -1,20 +1,19 @@
 package com.iswladi.apimedmath.apimedmath.Controllers;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.iswladi.apimedmath.apimedmath.Entities.Receta;
 import com.iswladi.apimedmath.apimedmath.Entities.Sugerencia;
 import com.iswladi.apimedmath.apimedmath.Repositories.SugerenciaRepository;
+import com.iswladi.apimedmath.apimedmath.exception.RequestException;
+import com.iswladi.apimedmath.apimedmath.utils.ConfiguracionSugerencia;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -30,13 +29,25 @@ public class SugerenciaController {
      * Endpoint para obtener una sugerencia de horarios basada en la receta proporcionada.
      *
      * @param receta La receta que contiene la información necesaria para calcular los horarios.
+     * @param horaInicioDia La hora en la que se inicia el dia del usuario (alarma para despertar).
      * @return Un objeto Sugerencia que incluye los horarios sugeridos, cada cuánto tiempo tomar y por cuántos días.
      */
     @GetMapping("/obtener/sugerencia/horarios")
-    public Sugerencia obtenerSugerenciaHorarios(@RequestBody Receta receta) {
+    public ResponseEntity<?> obtenerSugerenciaHorarios(
+            @RequestBody Receta receta,
+            @RequestParam(value = "horaInicioDia", required = false, defaultValue = "0") int horaInicioDia ) {
+
+        // Definir configuracion del usuario para las sugerencias
+        // En cada argumento a setear se hace manejo de errores
+        ConfiguracionSugerencia configuracionSugerencia = new ConfiguracionSugerencia.Builder()
+            .horaInicioDia(horaInicioDia)
+            .build();
+
         int cuantasVecesTomarPorDia = this.calcularCuantasVecesTomarDia(receta.getCadaCuantoHoras());
-        ArrayList<ArrayList<String>> sugerenciaHorarios = this.obtenerSugerenciaHorarios(cuantasVecesTomarPorDia, receta);
-        return new Sugerencia(sugerenciaHorarios, receta.getCadaCuantoHoras(), receta.getPorCuantosDias(), cuantasVecesTomarPorDia);
+
+        ArrayList<ArrayList<String>> sugerenciaHorarios = this.obtenerSugerenciaHorarios(cuantasVecesTomarPorDia, receta, configuracionSugerencia);
+        Sugerencia sugerencias = new Sugerencia(sugerenciaHorarios, receta.getCadaCuantoHoras(), receta.getPorCuantosDias(), cuantasVecesTomarPorDia);
+        return new ResponseEntity<>(sugerencias, HttpStatus.OK);
     }
 
     /**
@@ -46,22 +57,26 @@ public class SugerenciaController {
      * @param receta La receta que contiene la información necesaria para calcular los horarios.
      * @return Retorna una lista de sugerencias de horarios basada en la receta proporcionada.
      */
-    public ArrayList<ArrayList<String>> obtenerSugerenciaHorarios(int cuantasVecesTomarPorDia, Receta receta){
+    public ArrayList<ArrayList<String>> obtenerSugerenciaHorarios(int cuantasVecesTomarPorDia, Receta receta, ConfiguracionSugerencia configuracionSugerencia){
         // se debe devolver una lista de horarios en formato de 24 horas
         ArrayList<ArrayList<String>> sugerenciaHorarios = new ArrayList<ArrayList<String>>();
+        int ultimaHoraPosibleTomarDosis = (receta.getCadaCuantoHoras() * cuantasVecesTomarPorDia) - (receta.getCadaCuantoHoras() * (cuantasVecesTomarPorDia - 1));
 
-        for (int i = 0; i < 24; i++) {
-            int ultimaHoraTomarOtra = ((i + receta.getCadaCuantoHoras()) * cuantasVecesTomarPorDia);
+        if (configuracionSugerencia.getHoraInicioDia() > ultimaHoraPosibleTomarDosis) {
+            String mensajeError = "horaInicioToma (" + configuracionSugerencia.getHoraInicioDia() + ") no puede ser mayor a la ultima hora posible de tomar la dosis final del día (" + ultimaHoraPosibleTomarDosis + ").";
+            throw new RequestException(HttpStatus.BAD_REQUEST, mensajeError);
+        }
 
+        for (int i = configuracionSugerencia.getHoraInicioDia(); i < 24; i++) {
             ArrayList<String> sugerenciaList = new ArrayList<String>();
 
             // crear sugerencia de horario empezando en hora "i"
             int j = i;
             int cantidadVecesTomadas = 0; // para saber cuantas sugerencias se han hecho
             boolean esSugerenciasValida = true;
-            while (j <= ultimaHoraTomarOtra && cantidadVecesTomadas < cuantasVecesTomarPorDia) {
+            while (cantidadVecesTomadas < cuantasVecesTomarPorDia) {
                 String horaSugerida = this.convertirHoraIntAString(j);
-                // si la hora sugerida el mayor a 00:00, es una sugerencia invalida
+                // si la hora sugerida es mayor a 00:00, es una sugerencia invalida
                 if (j > 24) {
                     esSugerenciasValida = false;
                     break;
