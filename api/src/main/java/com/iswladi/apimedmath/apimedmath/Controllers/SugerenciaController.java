@@ -35,7 +35,7 @@ public class SugerenciaController {
     @GetMapping("/obtener/sugerencia/horarios")
     public ResponseEntity<?> obtenerSugerenciaHorarios(
             @RequestBody Receta receta,
-            @RequestParam(value = "horaInicioDia", required = false, defaultValue = "0") int horaInicioDia ) {
+            @RequestParam(value = "horaInicioDia", required = false, defaultValue = "00:00") String horaInicioDia ) {
 
         // Definir configuracion del usuario para las sugerencias
         // En cada argumento a setear se hace manejo de errores
@@ -66,8 +66,7 @@ public class SugerenciaController {
             String mensajeError = "horaInicioToma (" + configuracionSugerencia.getHoraInicioDia() + ") no puede ser mayor a la ultima hora posible de tomar la dosis final del día (" + ultimaHoraPosibleTomarDosis + ").";
             throw new RequestException(HttpStatus.BAD_REQUEST, mensajeError);
         }
-
-        for (int i = configuracionSugerencia.getHoraInicioDia(); i < 24; i++) {
+        for (int i = configuracionSugerencia.getHoraInicioDia().intValue(); i < 24; i++) {
             ArrayList<String> sugerenciaList = new ArrayList<String>();
 
             // crear sugerencia de horario empezando en hora "i"
@@ -122,7 +121,6 @@ public class SugerenciaController {
         }
         return horaString;
     }
-
 
     /**
      * Método que calcula cuántas veces se debe tomar el medicamento durante el día.
