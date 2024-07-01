@@ -1,0 +1,19 @@
+name: ci
+on:
+  push:
+    branches:
+      - 'dev'
+    paths:
+      - 'src/**'
+
+jobs:
+  run-api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker containers
+        run: sh -c "cd ./api && docker compose up -d"
+
+      - name: Run tests
+        run: sh -c "cd ./api && docker compose exec medmath-api mvn test"
