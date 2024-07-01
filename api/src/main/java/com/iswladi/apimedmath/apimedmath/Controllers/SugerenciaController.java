@@ -1,6 +1,7 @@
 package com.iswladi.apimedmath.apimedmath.Controllers;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import com.iswladi.apimedmath.apimedmath.Entities.Receta;
 import com.iswladi.apimedmath.apimedmath.Entities.Sugerencia;
@@ -74,12 +75,12 @@ public class SugerenciaController {
             int cantidadVecesTomadas = 0; // para saber cuantas sugerencias se han hecho
             boolean esSugerenciasValida = true;
             while (cantidadVecesTomadas < cuantasVecesTomarPorDia) {
-                String horaSugerida = this.convertirHoraIntAString(j);
                 // si la hora sugerida es mayor a 00:00, es una sugerencia invalida
                 if (j > 24) {
                     esSugerenciasValida = false;
                     break;
                 }
+                String horaSugerida = this.convertirHoraNumerosAString(configuracionSugerencia.getHoraInicioDia(), j);
                 sugerenciaList.add(horaSugerida);
                 j += receta.getCadaCuantoHoras();
                 cantidadVecesTomadas++;
@@ -93,25 +94,33 @@ public class SugerenciaController {
         }
 
         return sugerenciaHorarios;
-
-
     }
 
     /**
-     * Método que hace la conversión de un entero a un string con formato de hora 24 horas (15 -> 15:00 pm)
+     * Método que hace la conversión de una hora y sus minutos a un string con formato de 24 horas
      *
-     * @param hora La hora en entero que se quiere convertir a string.
-     * @return Retorna la hora en formato de string.
+     * @param horaInicioDia La hora del inicio del dia del usuario para obtener los minutos. (ejemplo: 0.05)
+     * @param hora La hora especifica para una sugerencia de horario en formato de entero. (ejemplo: 18)
+     * @return Retorna la hora en formato de string. (ejemplo: 18:05 pm)
      */
-    public String convertirHoraIntAString(int hora) {
+    public String convertirHoraNumerosAString(Float horaInicioDia, int hora) {
         String horaString = String.valueOf(hora);
         if (horaString.length() == 1) {
             horaString = "0" + horaString;
         }
-        if (horaString.equals("24")) {
+        else if (horaString.equals("24")) {
             horaString = "00";
         }
-        horaString += ":00";
+
+        // se obtienen los minutos
+        String minutos = horaInicioDia.toString().replaceAll("^\\d{1,2}\\.", "");
+
+        // formatear la representación de la hora
+        if (minutos.length() == 1) {
+            minutos += "0";
+        }
+        horaString += ":" + minutos;
+
         // agregar si es AM o PM
         if (hora < 12 || hora == 24) {
             horaString += " am";
