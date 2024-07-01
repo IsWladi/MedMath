@@ -22,10 +22,10 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${SPRING_DATASOURCE_DB}
-      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
-      - SPRING_DATASOURCE_DB=${SPRING_DATASOURCE_DB}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/medmathdb
+      - SPRING_DATASOURCE_USERNAME=iswladi
+      - SPRING_DATASOURCE_PASSWORD=iswladi123456789
+      - SPRING_DATASOURCE_DB=medmathdb
 
 # volumes:
 #   postgres-medmath:
