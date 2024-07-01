@@ -139,6 +139,13 @@ class SugerenciaControllerTests {
 		this.mockMvc.perform(get("/obtener/sugerencia/horarios?horaInicioDia=09:00")
             .content(jsonContent).contentType(MediaType.APPLICATION_JSON)).andDo(print())
             .andExpect(status().isBadRequest());
+
+        // valida patron incorrecto de hora de inicio de toma
+        jsonContent = "{ \"cadaCuantoHoras\": 8, \"porCuantosDias\": 5 }";
+		this.mockMvc.perform(get("/obtener/sugerencia/horarios?horaInicioDia=9")
+            .content(jsonContent).contentType(MediaType.APPLICATION_JSON)).andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("horaInicioDia (9) no tiene el formato correcto"));
 	}
 
 }
