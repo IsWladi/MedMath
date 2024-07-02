@@ -94,4 +94,40 @@ class SugerenciaControllerTests {
             .andExpect(jsonPath("$.sugerenciaHorarios[12][0]").value("12:00 pm"))
             .andExpect(jsonPath("$.sugerenciaHorarios[12][1]").value("00:00 am"));
 	}
+
+	@Test
+    /**
+     * Test para verificar que se retornen sugerencias de horarios válidas según la hora de inicio de toma configurada
+     */
+	void debeRetornarSugerenciaSegunHoraInicioTomaConfigurada() throws Exception {
+        String jsonContent = "{ \"cadaCuantoHoras\": 8, \"porCuantosDias\": 5 }";
+		this.mockMvc.perform(get("/obtener/sugerencia/horarios?horaInicioDia=06:00")
+            .content(jsonContent).contentType(MediaType.APPLICATION_JSON)).andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.porCuantosDias").value(5))
+            .andExpect(jsonPath("$.cadaCuantoHoras").value(8))
+            .andExpect(jsonPath("$.cuantasVecesTomarPorDia").value(3))
+            .andExpect(jsonPath("$.sugerenciaHorarios[0][0]").value("06:00 am"))
+            .andExpect(jsonPath("$.sugerenciaHorarios[0][1]").value("14:00 pm"))
+            .andExpect(jsonPath("$.sugerenciaHorarios[0][2]").value("22:00 pm"))
+            .andExpect(jsonPath("$.sugerenciaHorarios[1][0]").value("07:00 am"))
+            .andExpect(jsonPath("$.sugerenciaHorarios[1][1]").value("15:00 pm"))
+            .andExpect(jsonPath("$.sugerenciaHorarios[1][2]").value("23:00 pm"))
+            .andExpect(jsonPath("$.sugerenciaHorarios[2][0]").value("08:00 am"))
+            .andExpect(jsonPath("$.sugerenciaHorarios[2][1]").value("16:00 pm"))
+            .andExpect(jsonPath("$.sugerenciaHorarios[2][2]").value("00:00 am"));
+
+        // si ninguno de los horarios posibles inicia con la hora de inicio de toma especificada, no se retornan sugerencias
+        jsonContent = "{ \"cadaCuantoHoras\": 8, \"porCuantosDias\": 5 }";
+		this.mockMvc.perform(get("/obtener/sugerencia/horarios?horaInicioDia=09:00")
+            .content(jsonContent).contentType(MediaType.APPLICATION_JSON)).andDo(print())
+            .andExpect(status().isBadRequest());
+
+        // valida patron incorrecto de hora de inicio de toma
+        jsonContent = "{ \"cadaCuantoHoras\": 8, \"porCuantosDias\": 5 }";
+		this.mockMvc.perform(get("/obtener/sugerencia/horarios?horaInicioDia=9")
+            .content(jsonContent).contentType(MediaType.APPLICATION_JSON)).andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("horaInicioDia (9) no tiene el formato correcto"));
+	}
 }
