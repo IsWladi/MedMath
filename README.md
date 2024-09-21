@@ -1,3 +1,7 @@
+# Estado del Proyecto
+
+Este proyecto fue creado principalmente con fines de aprendizaje para explorar Spring Boot. Actualmente no tengo planes de continuar con su desarrollo, ya que no considero que la API sea particularmente útil. El repositorio será archivado y se mantendrá disponible para quienes quieran revisarlo o aprender de él. 
+
 # Instrucciones para levantar entorno
 
 <details>
